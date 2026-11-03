@@ -25,6 +25,7 @@ export const navLinks = [
   { href: "#projects", label: "Projects" },
   { href: "#skills", label: "Skills" },
   { href: "#experience", label: "Experience" },
+  { href: "#education", label: "Education" },
   { href: "#contact", label: "Contact" },
 ] as const;
 
@@ -33,9 +34,11 @@ export type Project = {
   title: string;
   description: string;
   githubUrl: string | null;
+  githubUrls?: { label: string; url: string }[];
   liveUrl: string | null;
-  // Drop a file in /public and set e.g. "/projects/edu-bridge.jpg".
   image: string | null;
+  logo?: string | null;
+  glowColor?: string;
   techStack: string;
 };
 
@@ -45,9 +48,15 @@ export const projects: Project[] = [
     title: "Edu-Bridge",
     description:
       "Selected by the department head to help complete the institute's educational automation platform and make studying easier for students. Contributed to frontend and backend development for the app and website serving students, teachers, department heads, administration, student affairs, and parents. Built with Laravel, Flutter, and MySQL; deployed on the institute's internal server and currently in use.",
-    githubUrl: null,
+    githubUrl: "https://github.com/majdoulee2006/Edu_Pridge_flutter",
+    githubUrls: [
+      { label: "Flutter App", url: "https://github.com/majdoulee2006/Edu_Pridge_flutter" },
+      { label: "Backend", url: "https://github.com/majdoulee2006/edu_bridge_backend" },
+    ],
     liveUrl: null,
-    image: null,
+    image: "/projects/edu-bridge.png",
+    logo: "/projects/edu-bridge.png",
+    glowColor: "rgba(235, 160, 48, 0.35)",
     techStack: "Laravel, Flutter, MySQL",
   },
   {
@@ -55,9 +64,15 @@ export const projects: Project[] = [
     title: "Smart Tank",
     description:
       "Graduation project: an IoT app built with Flutter and Laravel for real-time tank monitoring. Reads sensor data to display water levels continuously and sends instant Firebase alerts so users can manage tanks efficiently.",
-    githubUrl: null,
+    githubUrl: "https://github.com/wkh112006-source/smart-tank",
+    githubUrls: [
+      { label: "Flutter App", url: "https://github.com/wkh112006-source/smart-tank" },
+      { label: "Backend", url: "https://github.com/wkh112006-source/smart-tank-backend" },
+    ],
     liveUrl: null,
-    image: null,
+    image: "/projects/smart-tank.jpg",
+    logo: "/projects/smart-tank.jpg",
+    glowColor: "rgba(0, 195, 255, 0.42)",
     techStack: "Flutter, Laravel, Firebase, IoT",
   },
   {
@@ -142,11 +157,6 @@ export const education = [
     org: "UNRWA DTC",
     period: "Oct 2024 – Jul 2026",
     location: "Damascus",
-  },
-  {
-    title: "High School Certificate",
-    org: "Al-Saada Private High School",
-    period: "Sep 2021 – Jun 2024",
-    location: "Old City of Damascus",
+    certificateImage: "/cis-diploma.jpg",
   },
 ];

@@ -12,7 +12,6 @@ export default function Home() {
   const stack = ["Flutter", "Laravel", "Next.js", "React", "PHP", "MySQL", "Firebase", "Python", "ASP.NET Core", "Figma"];
   const studies = [
     { title: t.education.diploma, org: education[0].org },
-    { title: t.education.highSchool, org: t.education.highSchoolOrg },
   ];
 
   return (
@@ -73,7 +72,12 @@ export default function Home() {
                   {t.hero.viewProjects}
                   <Arrow />
                 </a>
-                <a className="btn" href={`mailto:${profile.email}`}>
+                <a
+                  className="btn"
+                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(profile.email)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {t.hero.emailMe}
                 </a>
               </div>
@@ -146,17 +150,42 @@ export default function Home() {
 
           <div className="projects__track" data-track>
             {projects.map((p, i) => (
-              <article key={p.id} className="project" data-project>
+              <article key={p.id} className="project" data-project style={{ "--p-glow": p.glowColor } as React.CSSProperties}>
                 <div className="project__visual" data-project-visual>
                   <span className="project__num">{pad(i + 1)}</span>
                   {p.image ? (
-                    <Image src={p.image} alt="" fill sizes="50vw" />
+                    <div className="project__showcase">
+                      <div className="project__showcase-glow" />
+                      <div className="project__showcase-card">
+                        <Image
+                          src={p.image}
+                          alt={p.title}
+                          width={180}
+                          height={180}
+                          className="project__showcase-img"
+                          priority={i === 0}
+                        />
+                      </div>
+                    </div>
                   ) : (
                     <Glyph id={p.id} />
                   )}
                 </div>
                 <div className="project__body">
-                  <h3 className="project__title">{p.title}</h3>
+                  <div className="project__title-group">
+                    {p.logo && (
+                      <div className="project__logo-badge">
+                        <Image
+                          src={p.logo}
+                          alt=""
+                          width={44}
+                          height={44}
+                          className="project__logo-img"
+                        />
+                      </div>
+                    )}
+                    <h3 className="project__title">{p.title}</h3>
+                  </div>
                   <p className="project__desc">
                     {t.projects.descriptions[p.title as keyof typeof t.projects.descriptions] ?? p.description}
                   </p>
@@ -171,7 +200,13 @@ export default function Home() {
                         {t.projects.openSite}
                       </a>
                     )}
-                    {p.githubUrl ? (
+                    {p.githubUrls && p.githubUrls.length > 0 ? (
+                      p.githubUrls.map((repo) => (
+                        <a key={repo.url} className="btn btn--sm" href={repo.url} target="_blank" rel="noreferrer">
+                          {repo.label}
+                        </a>
+                      ))
+                    ) : p.githubUrl ? (
                       <a className="btn btn--sm" href={p.githubUrl} target="_blank" rel="noreferrer">
                         {t.projects.viewCode}
                       </a>
@@ -215,53 +250,103 @@ export default function Home() {
           </div>
         </section>
 
-        {/* EXPERIENCE + EDUCATION */}
-        <section id="experience" className="section journey" data-section data-reveal data-stack>
-          <div className="wrap journey__grid">
-            <div>
-              <header className="section__head">
-                <span className="label">04 — {t.experience.eyebrow}</span>
-                <h2 className="h2" data-split>
-                  {t.experience.heading}
-                </h2>
-              </header>
-              <ol className="timeline" data-timeline>
-                <span className="timeline__line" data-timeline-line />
-                {experience.map((e) => (
-                  <li key={e.role} className="timeline__item" data-fade>
-                    <span className="mono timeline__period">{t.experience.period}</span>
-                    <h3>{t.experience.role}</h3>
-                    <p className="timeline__org">
-                      {t.experience.organization} · {t.experience.location}
-                    </p>
-                    <ul className="timeline__points">
-                      {t.experience.points.map((pt) => (
-                        <li key={pt}>{pt}</li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ol>
-            </div>
-            <div>
-              <header className="section__head">
-                <span className="label">05 — {t.education.eyebrow}</span>
-                <h2 className="h2" data-split>
-                  {t.education.heading}
-                </h2>
-              </header>
-              <ol className="timeline" data-timeline>
-                <span className="timeline__line" data-timeline-line />
-                {studies.map((s, i) => (
-                  <li key={s.title} className="timeline__item" data-fade>
-                    <span className="mono timeline__period">{t.education.periods[i]}</span>
-                    <h3>{s.title}</h3>
-                    <p className="timeline__org">
-                      {s.org} · {t.education.locations[i]}
-                    </p>
-                  </li>
-                ))}
-              </ol>
+        {/* EXPERIENCE */}
+        <section id="experience" className="section experience" data-section data-reveal data-stack>
+          <div className="wrap">
+            <header className="section__head">
+              <span className="label">04 — {t.experience.eyebrow}</span>
+              <h2 className="h2" data-split>
+                {t.experience.heading}
+              </h2>
+            </header>
+            <ol className="timeline" data-timeline>
+              <span className="timeline__line" data-timeline-line />
+              {experience.map((e) => (
+                <li key={e.role} className="timeline__item" data-fade>
+                  <span className="mono timeline__period">{t.experience.period}</span>
+                  <h3>{t.experience.role}</h3>
+                  <p className="timeline__org">
+                    {t.experience.organization} · {t.experience.location}
+                  </p>
+                  <ul className="timeline__points">
+                    {t.experience.points.map((pt) => (
+                      <li key={pt}>{pt}</li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* EDUCATION */}
+        <section id="education" className="section education" data-section data-reveal data-stack>
+          <div className="wrap">
+            <header className="section__head">
+              <span className="label">05 — {t.education.eyebrow}</span>
+              <h2 className="h2" data-split>
+                {t.education.heading}
+              </h2>
+            </header>
+
+            <div className="education__grid">
+              <div className="education__info">
+                <ol className="timeline" data-timeline>
+                  <span className="timeline__line" data-timeline-line />
+                  {studies.map((s, i) => (
+                    <li key={s.title} className="timeline__item" data-fade>
+                      <span className="mono timeline__period">{t.education.periods[i]}</span>
+                      <h3>{s.title}</h3>
+                      <p className="timeline__org">
+                        {s.org} · {t.education.locations[i]}
+                      </p>
+                      <div className="education__tags">
+                        <span className="education__tag">{t.education.tagDtc}</span>
+                        <span className="education__tag">{t.education.institute}</span>
+                        <span className="education__tag education__tag--grade">{t.education.grade}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              <div className="education__cert" data-fade>
+                <div className="education__cert-glow" aria-hidden="true" />
+                <a
+                  href="/cis-diploma.jpg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="education__cert-card"
+                  aria-label="View official CIS Diploma Certificate"
+                >
+                  <div className="education__cert-badge">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="8" r="6" />
+                      <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+                    </svg>
+                    <span>{t.education.officialDiploma}</span>
+                  </div>
+                  <div className="education__cert-media">
+                    <Image
+                      src="/cis-diploma.jpg"
+                      alt="Diploma in Computer Information Systems (CIS) - Wasim Mohammad Kheir Khalifa"
+                      width={900}
+                      height={636}
+                      className="education__cert-img"
+                    />
+                    <div className="education__cert-overlay">
+                      <span className="education__cert-btn">
+                        <span>{t.education.viewCertificate}</span>
+                        <Arrow />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="education__cert-footer">
+                    <span className="education__cert-title">{t.education.diploma}</span>
+                    <span className="education__cert-org mono">{t.education.tagDtc} · {t.education.locations[0]}</span>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -274,7 +359,13 @@ export default function Home() {
               {t.contact.heading}
             </h2>
             <p className="contact__desc">{t.contact.description}</p>
-            <a className="contact__email" href={`mailto:${profile.email}`} data-magnetic>
+            <a
+              className="contact__email"
+              href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(profile.email)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-magnetic
+            >
               <span>{profile.email}</span>
               <Arrow />
             </a>
