@@ -115,101 +115,96 @@ export function Motion() {
           hero.play();
         }
 
-        // ---------- Section transitions ----------
-        // Outgoing: the section pins while the next one slides over it, sinking back into shade.
-        $$("[data-stack]").forEach((section) => {
-          gsap.to(section, {
-            scale: 0.94,
-            "--shade": 0.65,
+        // Hero subtle parallax on desktop only
+        if (window.matchMedia("(min-width: 769px)").matches) {
+          gsap
+            .timeline({ scrollTrigger: { trigger: "[data-hero]", start: "top top", end: "bottom top", scrub: true } })
+            .to("[data-hero-name]", { yPercent: -15, ease: "none" }, 0)
+            .to("[data-hero-photo]", { yPercent: -10, ease: "none" }, 0);
+        }
+
+        // ---------- Responsive Card Stacking Animation ----------
+        const stackSections = [
+          document.querySelector<HTMLElement>("[data-hero]"),
+          document.querySelector<HTMLElement>("#about"),
+          document.querySelector<HTMLElement>("#projects"),
+          document.querySelector<HTMLElement>("#skills"),
+          document.querySelector<HTMLElement>("#experience"),
+          document.querySelector<HTMLElement>("#education"),
+          document.querySelector<HTMLElement>("#contact"),
+        ].filter(Boolean) as HTMLElement[];
+
+        stackSections.forEach((sec, idx) => {
+          const nextSec = stackSections[idx + 1];
+          if (!nextSec) return;
+
+          gsap.to(sec, {
+            scale: 0.95,
+            opacity: 0.85,
             ease: "none",
+            transformOrigin: "center top",
             scrollTrigger: {
-              trigger: section,
-              start: "bottom bottom",
-              end: "bottom top",
-              pin: true,
-              pinSpacing: false,
+              trigger: nextSec,
+              start: "top bottom",
+              end: "top 25%",
               scrub: true,
             },
           });
         });
 
-        // Incoming: the section opens up from a rounded card to full bleed.
-        $$("[data-reveal]").forEach((section) => {
-          gsap.fromTo(
-            section,
-            { clipPath: "inset(0% 5% 0% 5% round 40px)" },
-            {
-              clipPath: "inset(0% 0% 0% 0% round 0px)",
-              ease: "none",
-              scrollTrigger: { trigger: section, start: "top bottom", end: "top top", scrub: true },
-            },
-          );
-        });
-
-        // Hero sinks and drifts while About covers it.
-        gsap
-          .timeline({ scrollTrigger: { trigger: "[data-hero]", start: "top top", end: "bottom top", scrub: true } })
-          .to("[data-hero-name]", { yPercent: -30, ease: "none" }, 0)
-          .to("[data-hero-photo]", { yPercent: -18, rotate: -4, ease: "none" }, 0);
-
-        // ---------- Projects: pinned horizontal track ----------
-        const projects = document.querySelector<HTMLElement>("[data-projects]")!;
-        const track = projects.querySelector<HTMLElement>("[data-track]")!;
-        const cards = $$("[data-project]", track);
-        const dist = () => Math.max(0, track.offsetWidth - window.innerWidth);
-        const indexEl = projects.querySelector("[data-project-index]")!;
+        // ---------- Projects: horizontal slider (desktop) / touch carousel (mobile) ----------
+        const projects = document.querySelector<HTMLElement>("[data-projects]");
+        const track = projects?.querySelector<HTMLElement>("[data-track]");
+        const cards = track ? $$("[data-project]", track) : [];
+        const indexEl = projects?.querySelector("[data-project-index]");
         const setBar = gsap.quickSetter("[data-project-bar]", "scaleX");
+        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+        const dist = () => (track ? Math.max(0, track.offsetWidth - window.innerWidth + 60) : 0);
 
-        // One pinned timeline: slide the track (dist px of scroll), then hold one screen
-        // while Skills slides over. Durations are in px so scroll maps linearly.
-        const slide = gsap
-          .timeline({
-            defaults: { ease: "none" },
+        if (isDesktop && projects && track && dist() > 0) {
+          const slide = gsap.to(track, {
+            x: () => -dist(),
+            ease: "none",
             scrollTrigger: {
               trigger: projects,
               start: "top top",
-              end: () => `+=${dist() + window.innerHeight}`,
+              end: () => `+=${dist()}`,
               pin: true,
+              pinSpacing: true,
               scrub: 0.8,
               invalidateOnRefresh: true,
-              // Its pin adds scroll space; measure it before the (earlier-created) triggers below it.
-              refreshPriority: 1,
               onUpdate: (self) => {
-                const p = Math.min(1, (self.progress * (dist() + window.innerHeight)) / (dist() || 1));
+                const p = self.progress;
                 setBar(p);
-                indexEl.textContent = String(Math.round(p * (cards.length - 1)) + 1).padStart(2, "0");
+                if (indexEl) {
+                  indexEl.textContent = String(Math.round(p * (cards.length - 1)) + 1).padStart(2, "0");
+                }
               },
             },
-          })
-          .to(track, { x: () => -dist(), duration: dist() })
-          .to(projects, { scale: 0.94, "--shade": 0.65, duration: window.innerHeight });
-        cards.forEach((card) => {
-          const visual = card.querySelector("[data-project-visual]")!;
-          gsap.fromTo(
-            card.querySelector("[data-glyph]"),
-            { xPercent: 25, rotate: -8 },
-            {
-              xPercent: -25,
-              rotate: 8,
-              ease: "none",
-              scrollTrigger: { trigger: card, containerAnimation: slide, start: "left right", end: "right left", scrub: true },
-            },
-          );
-          gsap.from(card.querySelectorAll(".project__body > *"), {
-            y: 40,
-            autoAlpha: 0,
-            stagger: 0.06,
-            duration: 0.9,
-            ease: "power3.out",
-            scrollTrigger: { trigger: card, containerAnimation: slide, start: "left 85%" },
           });
-          gsap.from(visual, {
-            clipPath: "inset(0% 0% 0% 100% round 24px)",
-            duration: 1.2,
-            ease: "expo.out",
-            scrollTrigger: { trigger: card, containerAnimation: slide, start: "left 95%" },
+
+          cards.forEach((card) => {
+            gsap.from(card.querySelectorAll(".project__body > *"), {
+              y: 35,
+              autoAlpha: 0,
+              stagger: 0.05,
+              duration: 0.8,
+              ease: "power3.out",
+              scrollTrigger: { trigger: card, containerAnimation: slide, start: "left 85%" },
+            });
           });
-        });
+        } else {
+          cards.forEach((card) => {
+            gsap.from(card.querySelectorAll(".project__body > *"), {
+              y: 30,
+              autoAlpha: 0,
+              stagger: 0.05,
+              duration: 0.8,
+              ease: "power3.out",
+              scrollTrigger: { trigger: card, start: "top 88%" },
+            });
+          });
+        }
 
         // ---------- Text reveals ----------
         $$("[data-split]")

@@ -44,7 +44,7 @@ export default function Home() {
 
       <main>
         {/* HERO */}
-        <section id="top" className="hero" data-hero data-stack>
+        <section id="top" className="hero" data-hero>
           <div className="hero__meta mono">
             <span className="dot-live">{t.ui.available}</span>
             <span>{profile.location}</span>
@@ -90,7 +90,7 @@ export default function Home() {
         </section>
 
         {/* ABOUT */}
-        <section id="about" className="section about" data-section data-reveal data-stack>
+        <section id="about" className="section about" data-section>
           <div className="marquee" aria-hidden="true">
             <div className="marquee__track" data-marquee>
               {[0, 1].map((k) => (
@@ -224,7 +224,7 @@ export default function Home() {
         </section>
 
         {/* SKILLS */}
-        <section id="skills" className="section skills" data-section data-reveal data-stack>
+        <section id="skills" className="section skills" data-section>
           <div className="wrap">
             <header className="section__head">
               <span className="label">03 — {t.skills.eyebrow}</span>
@@ -251,7 +251,7 @@ export default function Home() {
         </section>
 
         {/* EXPERIENCE */}
-        <section id="experience" className="section experience" data-section data-reveal data-stack>
+        <section id="experience" className="section experience" data-section>
           <div className="wrap">
             <header className="section__head">
               <span className="label">04 — {t.experience.eyebrow}</span>
@@ -280,7 +280,7 @@ export default function Home() {
         </section>
 
         {/* EDUCATION */}
-        <section id="education" className="section education" data-section data-reveal data-stack>
+        <section id="education" className="section education" data-section>
           <div className="wrap">
             <header className="section__head">
               <span className="label">05 — {t.education.eyebrow}</span>
@@ -352,7 +352,7 @@ export default function Home() {
         </section>
 
         {/* CONTACT */}
-        <section id="contact" className="section contact" data-section data-reveal>
+        <section id="contact" className="section contact" data-section>
           <div className="wrap">
             <span className="label">06 — {t.contact.eyebrow}</span>
             <h2 className="contact__heading" data-split>

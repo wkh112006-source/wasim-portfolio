@@ -424,22 +424,23 @@ a:hover > .arrow {
 .menu {
   position: fixed;
   inset: 0;
-  z-index: 1;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2.5rem;
+  gap: clamp(1rem, 2.5vh, 2rem);
   padding: calc(var(--nav-h) + 1rem) var(--gutter) 2rem;
   background: var(--bg);
   clip-path: inset(0% 0% 100% 0%);
-  transition: clip-path 0.8s var(--ease-out);
+  transition: clip-path 0.5s var(--ease-out);
+  overflow-y: auto;
 }
 .menu[data-open="true"] {
   clip-path: inset(0% 0% 0% 0%);
 }
 .menu nav {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 .menu nav a {
   display: flex;
@@ -447,13 +448,13 @@ a:hover > .arrow {
   gap: 0.8rem;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(2.4rem, 11vw, 4rem);
-  line-height: 1.1;
+  font-size: clamp(1.6rem, 7vw, 3rem);
+  line-height: 1.15;
   letter-spacing: -0.03em;
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.6s, transform 0.8s var(--ease-out);
-  transition-delay: calc(var(--i) * 60ms + 150ms);
+  transform: translateY(24px);
+  transition: opacity 0.4s, transform 0.5s var(--ease-out);
+  transition-delay: calc(var(--i) * 45ms + 100ms);
 }
 .menu nav a .mono {
   color: var(--accent);
@@ -482,25 +483,57 @@ a:hover > .arrow {
   }
 }
 
-/* ---------- sections: shared ---------- */
+/* ---------- sections: shared & card stacking depth ---------- */
 .section {
   padding-block: var(--section-y);
+  position: relative;
+  will-change: transform;
+}
+.hero {
+  z-index: 1;
+}
+.about {
+  z-index: 2;
+  border-top-left-radius: clamp(20px, 3.5vw, 36px);
+  border-top-right-radius: clamp(20px, 3.5vw, 36px);
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.4);
+}
+.projects {
+  z-index: 3;
+  border-top-left-radius: clamp(20px, 3.5vw, 36px);
+  border-top-right-radius: clamp(20px, 3.5vw, 36px);
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.45);
+}
+.skills {
+  z-index: 4;
+  border-top-left-radius: clamp(20px, 3.5vw, 36px);
+  border-top-right-radius: clamp(20px, 3.5vw, 36px);
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.4);
+}
+.experience {
+  z-index: 5;
+  border-top-left-radius: clamp(20px, 3.5vw, 36px);
+  border-top-right-radius: clamp(20px, 3.5vw, 36px);
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.4);
+}
+.education {
+  z-index: 6;
+  border-top-left-radius: clamp(20px, 3.5vw, 36px);
+  border-top-right-radius: clamp(20px, 3.5vw, 36px);
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.4);
+}
+.contact {
+  z-index: 7;
+  border-top-left-radius: clamp(20px, 3.5vw, 36px);
+  border-top-right-radius: clamp(20px, 3.5vw, 36px);
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.45);
+}
+.footer {
+  z-index: 8;
+  position: relative;
 }
 [data-section] {
   position: relative;
-  z-index: 1; /* equal z: later sections paint over pinned earlier ones */
-  --shade: 0;
-}
-/* Shade that deepens as the next section slides over this one. */
-[data-section]::after,
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #000;
-  opacity: var(--shade, 0);
-  pointer-events: none;
-  z-index: 5;
 }
 .section__head {
   display: grid;
@@ -647,10 +680,31 @@ a:hover > .arrow {
     display: flex;
   }
 }
-@media (max-width: 767px) {
+@media (max-width: 768px) {
+  .hero {
+    min-height: auto;
+    padding-top: calc(var(--nav-h) + 16px);
+    padding-bottom: 2.5rem;
+    gap: 1.25rem;
+  }
   .hero__photo {
+    position: relative;
     top: auto;
-    bottom: 46%;
+    bottom: auto;
+    inset-inline-end: auto;
+    width: clamp(120px, 32vw, 160px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    margin-block: 0.25rem 0.75rem;
+    border: 3px solid var(--accent);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+  .hero__photo img {
+    filter: none;
+  }
+  .hero__name {
+    font-size: clamp(2.5rem, 11vw, 4.2rem);
+    line-height: 0.95;
   }
 }
 
@@ -788,31 +842,41 @@ a:hover > .arrow {
 
 .projects__track {
   display: flex;
-  gap: clamp(16px, 2.5vw, 40px);
+  gap: clamp(16px, 2.5vw, 36px);
   padding-inline: var(--gutter);
-  /* No-motion fallback: native horizontal scroll with snapping. */
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scrollbar-width: thin;
-  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 16px;
 }
-.motion .projects__track {
-  width: max-content;
-  overflow: visible;
-  scroll-snap-type: none;
-  will-change: transform;
+.projects__track::-webkit-scrollbar {
+  display: none;
 }
 .motion .skills {
-  /* Slides up over the held projects pin (see Motion.tsx). */
-  margin-top: -100vh;
+  margin-top: 0;
 }
 
 .project {
-  flex: 0 0 auto;
-  width: min(86vw, 1080px);
+  flex: 0 0 clamp(280px, 86vw, 420px);
   display: grid;
-  gap: clamp(16px, 2.5vw, 40px);
-  scroll-snap-align: start;
+  gap: clamp(14px, 2vw, 24px);
+  scroll-snap-align: center;
+}
+@media (min-width: 1024px) {
+  .motion .projects__track {
+    width: max-content;
+    overflow: visible;
+    scroll-snap-type: none;
+    will-change: transform;
+    padding-bottom: 0;
+  }
+  .project {
+    flex: 0 0 auto;
+    width: min(78vw, 1180px);
+    grid-template-columns: 1.25fr 1fr;
+    align-items: center;
+  }
 }
 .project__visual {
   position: relative;
@@ -980,20 +1044,15 @@ a:hover > .arrow {
 .project .btn:not(.btn--solid):hover {
   border-color: var(--invert-fg);
 }
-@media (min-width: 900px) {
-  .project {
-    width: min(78vw, 1180px);
-    grid-template-columns: 1.25fr 1fr;
-    align-items: center;
-  }
+@media (min-width: 1024px) {
   .project__visual {
     aspect-ratio: 4 / 3.4;
     max-height: 62vh;
   }
 }
-@media (max-height: 760px) and (max-width: 899px) {
+@media (max-width: 1023px) {
   .project__visual {
-    aspect-ratio: 16 / 8;
+    aspect-ratio: 16 / 10;
   }
   .project__desc {
     display: -webkit-box;
