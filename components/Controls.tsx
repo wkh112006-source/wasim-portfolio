@@ -24,7 +24,6 @@ export function Controls() {
     else lenisRef.current?.start();
   };
 
-
   const toggleTheme = (e: MouseEvent<HTMLButtonElement>) => {
     const root = document.documentElement;
     const next = root.dataset.theme === "light" ? "dark" : "light";
@@ -42,55 +41,115 @@ export function Controls() {
   };
 
   return (
-    <header className="nav" data-nav>
-      <a href="#top" className="nav__brand" aria-label={profile.name}>
-        <Mark className="nav__mark" />
-        <span className="nav__name">{profile.name}</span>
-      </a>
-
-      <nav className="nav__links" aria-label="Primary">
-        {navLinks.map((link, i) => (
-          <a key={link.href} href={link.href} data-nav-link={link.href.slice(1)}>
-            <span className="mono">{String(i + 1).padStart(2, "0")}</span>
-            {t.navigation[i]}
-          </a>
-        ))}
-      </nav>
-
-      <div className="nav__actions">
-        <button type="button" className="chip chip--icon" onClick={toggleTheme} aria-label={t.toggleTheme} title={t.toggleTheme}>
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-            <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" strokeWidth="2" />
-            <path className="theme-half" d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" />
-          </svg>
-        </button>
-        <a href={profile.cvUrl} download className="chip chip--accent nav__cv">
-          {t.downloadCv}
+    <>
+      <header className="nav" data-nav>
+        <a href="#top" className="nav__brand" aria-label={profile.name}>
+          <Mark className="nav__mark" />
+          <span className="nav__name">{profile.name}</span>
         </a>
-        <button
-          type="button"
-          className="chip nav__burger"
-          aria-expanded={open}
-          aria-controls="menu"
-          onClick={() => setMenu(!open)}
-        >
-          {open ? t.close : t.menu}
-        </button>
-      </div>
 
-      <div id="menu" className="menu" data-open={open} inert={!open}>
-        <nav aria-label="Mobile">
+        <nav className="nav__links" aria-label="Primary">
           {navLinks.map((link, i) => (
-            <a key={link.href} href={link.href} onClick={() => setMenu(false)} style={{ "--i": i } as CSSProperties}>
+            <a key={link.href} href={link.href} data-nav-link={link.href.slice(1)}>
               <span className="mono">{String(i + 1).padStart(2, "0")}</span>
               {t.navigation[i]}
             </a>
           ))}
         </nav>
-        <a href={profile.cvUrl} download className="btn btn--solid">
-          {t.downloadCv}
-        </a>
-      </div>
-    </header>
+
+        <div className="nav__actions">
+          <button type="button" className="chip chip--icon" onClick={toggleTheme} aria-label={t.toggleTheme} title={t.toggleTheme}>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" strokeWidth="2" />
+              <path className="theme-half" d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" />
+            </svg>
+          </button>
+          <a href={profile.cvUrl} download className="chip chip--accent nav__cv">
+            {t.downloadCv}
+          </a>
+          <button
+            type="button"
+            className="chip nav__burger"
+            aria-expanded={open}
+            aria-controls="menu"
+            aria-label={open ? t.close : t.menu}
+            onClick={() => setMenu(!open)}
+          >
+            {open ? t.close : t.menu}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Drawer Backdrop */}
+      <div
+        className="menu-backdrop"
+        data-open={open}
+        onClick={() => setMenu(false)}
+        aria-hidden="true"
+      />
+
+      {/* Mobile Side Drawer */}
+      <aside
+        id="menu"
+        className="menu menu--drawer"
+        data-open={open}
+        inert={!open ? true : undefined}
+        aria-label="Mobile Navigation"
+      >
+        <div className="drawer__header">
+          <div className="drawer__brand">
+            <Mark className="nav__mark" />
+            <span className="mono">{profile.name}</span>
+          </div>
+          <button
+            type="button"
+            className="chip chip--icon drawer__close"
+            onClick={() => setMenu(false)}
+            aria-label={t.close}
+          >
+            ✕
+          </button>
+        </div>
+
+        <nav className="drawer__nav" aria-label="Mobile Sections">
+          {navLinks.map((link, i) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="drawer__link"
+              onClick={() => setMenu(false)}
+              style={{ "--i": i } as CSSProperties}
+            >
+              <span className="mono drawer__index">{String(i + 1).padStart(2, "0")}</span>
+              <span className="drawer__label">{t.navigation[i]}</span>
+              <span className="drawer__arrow" aria-hidden="true">→</span>
+            </a>
+          ))}
+        </nav>
+
+        <div className="drawer__footer">
+          <a href={profile.cvUrl} download className="btn btn--solid drawer__cv">
+            {t.downloadCv}
+          </a>
+          <div className="drawer__socials">
+            {profile.github && (
+              <a href={profile.github} target="_blank" rel="noopener noreferrer" className="chip">
+                GitHub
+              </a>
+            )}
+            {profile.linkedin && (
+              <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="chip">
+                LinkedIn
+              </a>
+            )}
+            {profile.whatsapp && (
+              <a href={profile.whatsapp} target="_blank" rel="noopener noreferrer" className="chip">
+                WhatsApp
+              </a>
+            )}
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }

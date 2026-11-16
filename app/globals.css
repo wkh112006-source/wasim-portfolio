@@ -421,50 +421,149 @@ a:hover > .arrow {
   display: none;
 }
 
-.menu {
+/* Mobile Drawer Backdrop */
+.menu-backdrop {
   position: fixed;
   inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.menu-backdrop[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mobile Side Drawer */
+.menu--drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: min(88vw, 360px);
+  height: 100dvh;
   z-index: 100;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: clamp(1rem, 2.5vh, 2rem);
-  padding: calc(var(--nav-h) + 1rem) var(--gutter) 2rem;
-  background: var(--bg);
-  clip-path: inset(0% 0% 100% 0%);
-  transition: clip-path 0.5s var(--ease-out);
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem 1.5rem 2rem;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-left: 1px solid var(--line);
+  box-shadow: -15px 0 50px rgba(0, 0, 0, 0.55);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   overflow-y: auto;
 }
-.menu[data-open="true"] {
-  clip-path: inset(0% 0% 0% 0%);
+.menu--drawer[data-open="true"] {
+  transform: translateX(0);
 }
-.menu nav {
-  display: grid;
-  gap: 0.35rem;
-}
-.menu nav a {
+
+.drawer__header {
   display: flex;
-  align-items: baseline;
-  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.drawer__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+}
+.drawer__brand .mono {
+  font-size: 0.85rem;
+  color: var(--fg);
+}
+.drawer__close {
+  font-size: 1.1rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.drawer__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-block: 0.5rem;
+  flex: 1;
+  justify-content: center;
+}
+.drawer__link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  text-decoration: none;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.6rem, 7vw, 3rem);
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.4s, transform 0.5s var(--ease-out);
-  transition-delay: calc(var(--i) * 45ms + 100ms);
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  transition: background 0.25s, color 0.25s, transform 0.25s;
 }
-.menu nav a .mono {
+.drawer__link .drawer__index {
+  font-size: 0.8rem;
   color: var(--accent);
+  min-width: 1.8rem;
 }
-.menu[data-open="true"] nav a {
+.drawer__link .drawer__label {
+  flex: 1;
+}
+.drawer__link .drawer__arrow {
+  font-size: 1.1rem;
+  color: var(--muted);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+.drawer__link:hover,
+.drawer__link:focus-visible,
+.drawer__link:active {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--fg);
+  transform: translateX(4px);
+}
+.drawer__link:hover .drawer__arrow,
+.drawer__link:focus-visible .drawer__arrow {
   opacity: 1;
-  transform: none;
+  transform: translateX(0);
 }
-.menu .btn {
-  align-self: flex-start;
+
+.drawer__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.drawer__cv {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+.drawer__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.drawer__socials .chip {
+  font-size: 0.75rem;
+  padding: 0.4rem 0.85rem;
 }
 
 @media (min-width: 960px) {
@@ -473,8 +572,9 @@ a:hover > .arrow {
     display: flex;
   }
   .nav__burger,
-  .menu {
-    display: none;
+  .menu--drawer,
+  .menu-backdrop {
+    display: none !important;
   }
 }
 @media (max-width: 520px) {
